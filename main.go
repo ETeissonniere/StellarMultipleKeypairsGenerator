@@ -60,6 +60,10 @@ func main() {
     kdbGroup := gokeepasslib.NewGroup()
     kdbGroup.Name = "Stellar keys"
 
+    pkFile, err := os.Create(publicKeyOnlyFile)
+    check(err)
+    defer pkFile.Close()
+
     for i := 0; i < nbKeys; i++ {
         pk, sk := newKeypair()
 
@@ -68,6 +72,9 @@ func main() {
         entry.Values = append(entry.Values, mkProtectedValue("Private key", sk))
 
         kdbGroup.Entries = append(kdbGroup.Entries, entry)
+
+        pkFile.WriteString(pk)
+        pkFile.WriteString("\n")
     }
 
     kdb := &gokeepasslib.Database{
